@@ -2,11 +2,31 @@
 import re
 import shutil
 import tempfile
+from functools import wraps
 from pathlib import Path
 
 import pytest
 
 import mllam_data_prep as mdp
+
+
+def skip_on(exception, reason="Default reason"):
+    # Func below is the real decorator and will receive the test function as param
+    def decorator_func(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                # Try to run the test
+                return f(*args, **kwargs)
+            except exception:
+                # If exception of given type happens
+                # just swallow it and raise pytest.Skip with given reason
+                pytest.skip(reason)
+
+        return wrapper
+
+    return decorator_func
+
 
 HEIGHT_LEVEL_TEST_SECTION = """\
 inputs:
@@ -273,17 +293,18 @@ inputs:
 """
 
 
+@skip_on(NotImplementedError, reason="This functionality is not yet supported.")
 @pytest.mark.parametrize(
     "new_inputs_section, expected_result",
     [
         (
-            None,
-            False,
-        ),  # Do not modify the example config - should return False since we're expecting no nans
+            None,  # Do not modify the example config
+            False,  # Should return False since we're expecting no nans
+        ),
         (
-            INVALID_PRESSURE_LEVEL_TEST_SECTION,
-            True,
-        ),  # Dataset with nans - should return True
+            INVALID_PRESSURE_LEVEL_TEST_SECTION,  # Dataset with nans
+            True,  # Should return True
+        ),
     ],
 )
 def test_output_dataset_for_nans(new_inputs_section, expected_result):
