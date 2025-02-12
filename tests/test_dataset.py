@@ -113,23 +113,24 @@ inputs:
 
 def modify_example_config_inputs_section(config: str, update: str):
     """
-    Get the example config file as a yaml string and replace the
-    `inputs` section with a new inputs section before reading the config
+    Update provided config.
 
     Parameters
     ----------
-    new_inputs_section: str
-        String with a new inputs section
+    config: str
+        String with config in yaml format
+    update: str
+        String with the update in yaml format
 
     Returns
     -------
     config: Config
-        Modified config with the new inputs section replacing the old one
-        in the example config
+        Updated config
     """
     original_config = mdp.Config.from_yaml(config)
     update = yaml.safe_load(update)
-    modified_config = original_config.to_dict().update(update)
+    modified_config = original_config.to_dict()
+    modified_config.update(update)
     modified_config = mdp.Config.from_dict(modified_config)
 
     return modified_config
