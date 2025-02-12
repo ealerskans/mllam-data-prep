@@ -32,6 +32,10 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
+    coord_ranges:
+      time:
+        start: "2022-04-01T00:00:00"
+        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -60,6 +64,10 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
+    coord_ranges:
+      time:
+        start: "2022-04-01T00:00:00"
+        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -81,6 +89,10 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
+    coord_ranges:
+      time:
+        start: "2022-04-01T00:00:00"
+        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -107,6 +119,42 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
+    coord_ranges:
+      time:
+        start: "2022-04-01T00:00:00"
+        end: "2022-04-01T03:00:00"
+    target_output_variable: state
+"""
+
+INVALID_PRESSURE_LEVEL_TEST_SECTION = """\
+inputs:
+  danra_pressure_levels:
+    path: https://object-store.os-api.cci1.ecmwf.int/mllam-testdata/danra_cropped/v0.2.0/pressure_levels.zarr
+    dims: [time, x, y, pressure]
+    variables:
+      z:
+        pressure:
+          values: [1000,]
+          units: hPa
+      t:
+        pressure:
+          values: [800, ]
+          units: hPa
+    dim_mapping:
+      time:
+        method: rename
+        dim: time
+      state_feature:
+        method: stack_variables_by_var_name
+        dims: [pressure]
+        name_format: "{var_name}{pressure}m"
+      grid_index:
+        method: stack
+        dims: [x, y]
+    coord_ranges:
+      time:
+        start: "2022-04-01T00:00:00"
+        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -227,35 +275,6 @@ def test_selected_output_variables(base_config, new_inputs_section):
             pytest.fail(error_message)
 
 
-INVALID_PRESSURE_LEVEL_TEST_SECTION = """\
-inputs:
-  danra_pressure_levels:
-    path: https://object-store.os-api.cci1.ecmwf.int/mllam-testdata/danra_cropped/v0.2.0/pressure_levels.zarr
-    dims: [time, x, y, pressure]
-    variables:
-      z:
-        pressure:
-          values: [1000,]
-          units: hPa
-      t:
-        pressure:
-          values: [800, ]
-          units: hPa
-    dim_mapping:
-      time:
-        method: rename
-        dim: time
-      state_feature:
-        method: stack_variables_by_var_name
-        dims: [pressure]
-        name_format: "{var_name}{pressure}m"
-      grid_index:
-        method: stack
-        dims: [x, y]
-    target_output_variable: state
-"""
-
-
 @pytest.mark.parametrize(
     "base_config, update, expected_result",
     [
@@ -275,12 +294,7 @@ def test_output_dataset_for_nans(base_config, update, expected_result):
     """
     Test that the output dataset does not contain any nan values.
     """
-    # Modify the example config
     config = update_config(base_config, update)
-
-    # Create the dataset
     ds = mdp.create_dataset(config=config)
-
-    # Test that we have no nans
-    nan_in_ds = ds.isnull().any().compute().to_array().any().item()
+    nan_in_ds = any(ds.isnull().any().to_array())
     assert nan_in_ds == expected_result
