@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- add functionality to slice input data by any coordinate [\#55](https://github.com/mllam/mllam-data-prep/pull/55a)@matschreiner
 - add ability to derive variables from input datasets [\#34](https://github.com/mllam/mllam-data-prep/pull/34), @ealerskans, @mafdmi
 - add github PR template to guide development process on github [\#44](https://github.com/mllam/mllam-data-prep/pull/44), @leifdenby
 - add support for zarr 3.0.0 and above [\#51](https://github.com/mllam/mllam-data-prep/pull/51), @kashif
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - correct chunk size estimate [\#59](https://github.com/mllam/mllam-data-prep/pull/59), @ealerskans
 - fix bug arising when variables provided to derived functions are renamed [\#56](https://github.com/mllam/mllam-data-prep/pull/56), @leifdenby
+- ensure config fields defaulting to `None` are typed as `Optional` and fields defaulting to `{}` are given a default-factory so that serialization with default values works correctly [\#63](https://github.com/mllam/mllam-data-prep/pull/63), @leifdenby
 
 ### Maintenance
 
