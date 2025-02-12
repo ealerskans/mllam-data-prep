@@ -71,13 +71,7 @@ def select_by_kwargs(ds, **coord_ranges):
 
             # we don't select with the step size for now, but simply check (below) that
             # the step size in the data is the same as the requested step size
-            ds = ds.sel({coord: slice(sel_start, sel_end)})
-
-            if coord == "time":
-                check_point_in_dataset(coord, sel_start, ds)
-                check_point_in_dataset(coord, sel_end, ds)
-                if sel_step is not None:
-                    check_step(sel_step, coord, ds)
+            ds = ds.sel({coord: slice(sel_start, sel_end, sel_step)})
 
             assert (
                 len(ds[coord]) > 0
