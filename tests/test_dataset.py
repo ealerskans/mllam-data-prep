@@ -111,7 +111,7 @@ inputs:
 """
 
 
-def modify_example_config_inputs_section(config: str, update: str):
+def update_config(config: str, update: str):
     """
     Update provided config.
 
@@ -139,7 +139,7 @@ def modify_example_config_inputs_section(config: str, update: str):
 @pytest.mark.parametrize(
     "base_config, new_inputs_section",
     [
-        (BASE_CONFIG, None),  # Does not modify the example config
+        (BASE_CONFIG, "{}"),  # Does not modify the example config
         (BASE_CONFIG, PRESSURE_LEVEL_TEST_SECTION),
         (BASE_CONFIG, HEIGHT_LEVEL_TEST_SECTION),
         (BASE_CONFIG, SINGLE_LEVEL_SELECTED_VARIABLES_TEST_SECTION),
@@ -152,7 +152,7 @@ def test_selected_output_variables(base_config, new_inputs_section):
     present in the output dataset.
     """
     # Modify the example config
-    config = modify_example_config_inputs_section(base_config, new_inputs_section)
+    config = update_config(base_config, new_inputs_section)
 
     # Create the dataset
     ds = mdp.create_dataset(config=config)
@@ -257,24 +257,26 @@ inputs:
 
 
 @pytest.mark.parametrize(
-    "new_inputs_section, expected_result",
+    "base_config, update, expected_result",
     [
         (
-            None,
+            BASE_CONFIG,
+            "{}",
             False,
         ),  # Do not modify the example config - should return False since we're expecting no nans
         (
+            BASE_CONFIG,
             INVALID_PRESSURE_LEVEL_TEST_SECTION,
             True,
         ),  # Dataset with nans - should return True
     ],
 )
-def test_output_dataset_for_nans(new_inputs_section, expected_result):
+def test_output_dataset_for_nans(base_config, update, expected_result):
     """
     Test that the output dataset does not contain any nan values.
     """
     # Modify the example config
-    config = modify_example_config_inputs_section(new_inputs_section)
+    config = update_config(base_config, update)
 
     # Create the dataset
     ds = mdp.create_dataset(config=config)
