@@ -1,12 +1,11 @@
 """Tests for the output dataset created by `mllam-data-prep`."""
-import re
-import shutil
-import tempfile
-from pathlib import Path
-
 import pytest
+import yaml
 
 import mllam_data_prep as mdp
+
+with open("example.danra.yaml", "r") as file:
+    BASE_CONFIG = file.read()
 
 HEIGHT_LEVEL_TEST_SECTION = """\
 inputs:
@@ -112,7 +111,7 @@ inputs:
 """
 
 
-def modify_example_config_inputs_section(new_inputs_section):
+def modify_example_config_inputs_section(config: str, update: str):
     """
     Get the example config file as a yaml string and replace the
     `inputs` section with a new inputs section before reading the config
@@ -128,54 +127,37 @@ def modify_example_config_inputs_section(new_inputs_section):
         Modified config with the new inputs section replacing the old one
         in the example config
     """
-    # Copy the config file to a temporary directory before reading it
-    fp_example = "example.danra.yaml"
-    tmpdir = tempfile.TemporaryDirectory()
-    fp_config_copy = Path(tmpdir.name) / fp_example
-    shutil.copy(fp_example, fp_config_copy)
-
-    # Read the example config file as text to preserve the order
-    base_config_yaml = Path(fp_config_copy).read_text()
-
-    # Use regex to replace the entire "inputs:" block
-    if new_inputs_section:
-        modified_yaml = re.sub(
-            r"inputs:\n((?:\s{2,}.*\n)*)",  # Matches "inputs:" and all indented content
-            new_inputs_section,
-            base_config_yaml,
-        )
-    else:
-        modified_yaml = base_config_yaml
-
-    # Read the config
-    modified_config = mdp.Config.from_yaml(modified_yaml)
+    original_config = mdp.Config.from_yaml(config)
+    update = yaml.safe_load(update)
+    modified_config = original_config.to_dict().update(update)
+    modified_config = mdp.Config.from_dict(modified_config)
 
     return modified_config
 
 
 @pytest.mark.parametrize(
-    "new_inputs_section",
+    "base_config, new_inputs_section",
     [
-        None,  # Does not modify the example config
-        PRESSURE_LEVEL_TEST_SECTION,
-        HEIGHT_LEVEL_TEST_SECTION,
-        SINGLE_LEVEL_SELECTED_VARIABLES_TEST_SECTION,
-        SINGLE_LEVEL_DERIVED_VARIABLES_TEST_SECTION,
+        (BASE_CONFIG, None),  # Does not modify the example config
+        (BASE_CONFIG, PRESSURE_LEVEL_TEST_SECTION),
+        (BASE_CONFIG, HEIGHT_LEVEL_TEST_SECTION),
+        (BASE_CONFIG, SINGLE_LEVEL_SELECTED_VARIABLES_TEST_SECTION),
+        (BASE_CONFIG, SINGLE_LEVEL_DERIVED_VARIABLES_TEST_SECTION),
     ],
 )
-def test_selected_output_variables(new_inputs_section):
+def test_selected_output_variables(base_config, new_inputs_section):
     """
     Test that the variables specified in each input dataset are
     present in the output dataset.
     """
     # Modify the example config
-    config = modify_example_config_inputs_section(new_inputs_section)
+    config = modify_example_config_inputs_section(base_config, new_inputs_section)
 
     # Create the dataset
     ds = mdp.create_dataset(config=config)
 
     # Check that the output variables are the ones selected
-    for dataset_name, input_config in config.inputs.items():
+    for _, input_config in config.inputs.items():
         target_output_variable = input_config.target_output_variable
 
         # Get the expected selected variable names
