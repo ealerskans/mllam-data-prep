@@ -72,6 +72,12 @@ def select_by_kwargs(ds, **coord_ranges):
             # the step size in the data is the same as the requested step size
             ds = ds.sel({coord: slice(sel_start, sel_end)})
 
+            if coord == "time":
+                check_point_in_dataset(coord, sel_start, ds)
+                check_point_in_dataset(coord, sel_end, ds)
+                if sel_step is not None:
+                    check_step(sel_step, coord, ds)
+
             assert (
                 len(ds[coord]) > 0
             ), f"You have selected an empty range {sel_start}:{sel_end} for coordinate {coord}"
