@@ -296,5 +296,5 @@ def test_output_dataset_for_nans(base_config, update, expected_result):
     """
     config = update_config(base_config, update)
     ds = mdp.create_dataset(config=config)
-    nan_in_ds = any(ds.isnull().any().to_array())
+    nan_in_ds = any(ds.isnull().any().compute().to_array())
     assert nan_in_ds == expected_result

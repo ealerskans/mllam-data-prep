@@ -65,13 +65,12 @@ def select_by_kwargs(ds, **coord_ranges):
                 )
             sel_start = _normalize_slice_startstop(selection.start)
             sel_end = _normalize_slice_startstop(selection.end)
-            sel_step = _normalize_slice_step(selection.step)
 
             assert sel_start != sel_end, "Start and end cannot be the same"
 
             # we don't select with the step size for now, but simply check (below) that
             # the step size in the data is the same as the requested step size
-            ds = ds.sel({coord: slice(sel_start, sel_end, sel_step)})
+            ds = ds.sel({coord: slice(sel_start, sel_end)})
 
             assert (
                 len(ds[coord]) > 0
