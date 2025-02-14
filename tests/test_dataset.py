@@ -32,10 +32,6 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
-    coord_ranges:
-      time:
-        start: "2022-04-01T00:00:00"
-        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -64,10 +60,6 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
-    coord_ranges:
-      time:
-        start: "2022-04-01T00:00:00"
-        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -89,10 +81,6 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
-    coord_ranges:
-      time:
-        start: "2022-04-01T00:00:00"
-        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -119,10 +107,6 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
-    coord_ranges:
-      time:
-        start: "2022-04-01T00:00:00"
-        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
@@ -151,10 +135,6 @@ inputs:
       grid_index:
         method: stack
         dims: [x, y]
-    coord_ranges:
-      time:
-        start: "2022-04-01T00:00:00"
-        end: "2022-04-01T03:00:00"
     target_output_variable: state
 """
 
