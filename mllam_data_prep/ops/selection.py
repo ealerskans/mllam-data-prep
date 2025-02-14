@@ -65,6 +65,7 @@ def select_by_kwargs(ds, **coord_ranges):
                 )
             sel_start = _normalize_slice_startstop(selection.start)
             sel_end = _normalize_slice_startstop(selection.end)
+            sel_step = _normalize_slice_step(selection.step)
 
             assert sel_start != sel_end, "Start and end cannot be the same"
 
