@@ -236,10 +236,10 @@ def create_dataset(config: Config):
 
         # only need to do selection for the coordinates that the input dataset actually has
         if output_coord_ranges is not None:
-            output_coord_ranges = {
+            dataset_output_coord_ranges = {
                 k: w for k, w in output_coord_ranges.items() if k in output_dims
             }
-            da_target = select_by_kwargs(da_target, **output_coord_ranges)
+            da_target = select_by_kwargs(da_target, **dataset_output_coord_ranges)
 
         dataarrays_by_target[target_output_var].append(da_target)
 
@@ -390,6 +390,8 @@ def create_dataset_zarr(
             )
 
     ds = create_dataset(config=config)
+    nan_in_ds = any(ds.isnull().any().compute().to_array())
+    logger.info(f"Are there any nans in the dataset? {nan_in_ds}")
 
     logger.info("Writing dataset to zarr")
 
